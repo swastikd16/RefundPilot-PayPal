@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Sparkles, PlusCircle, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Sparkles, PlusCircle, Sun, Moon, RotateCcw } from 'lucide-react';
 
-export default function Header({ onOpenNewCase, onSeedDemo, seeding }) {
+export default function Header({ onOpenNewCase, onSeedDemo, onReset, seeding, resetting }) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('color-scheme');
@@ -45,6 +45,17 @@ export default function Header({ onOpenNewCase, onSeedDemo, seeding }) {
           <span className="dot"></span>
           <span>PayPal Sandbox Active</span>
         </div>
+
+        {/* Reset Database for Clean Demos */}
+        <button 
+          className="theme-toggle-btn"
+          onClick={onReset}
+          disabled={resetting}
+          title="Reset all test cases for fresh demo recording"
+          aria-label="Reset test database"
+        >
+          <RotateCcw size={15} className={resetting ? 'spin' : ''} />
+        </button>
 
         {/* Light / Dark Mode Toggle Button */}
         <button 

@@ -754,3 +754,82 @@ button {
   from { opacity: 0.6; }
   to { opacity: 1; transform: scale(1.1); }
 }
+
+/* Step Progress Stepper */
+.step-progress-container {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.step-progress-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--card-border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.step-node.current .step-circle {
+  border-color: var(--accent-paypal);
+  background: rgba(0, 112, 186, 0.15);
+  color: var(--accent-paypal-light);
+  box-shadow: 0 0 10px rgba(0, 112, 186, 0.3);
+}
+
+.step-node.current .step-label {
+  color: var(--accent-paypal-light);
+  font-weight: 600;
+}
+
+.step-node.completed .step-circle {
+  border-color: var(--accent-green);
+  background: var(--accent-green);
+  color: white;
+}
+
+.step-node.completed .step-label {
+  color: var(--accent-green);
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--card-border);
+  margin: 0 0.5rem -1.2rem 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.step-line.completed {
+  background: var(--accent-green);
+}

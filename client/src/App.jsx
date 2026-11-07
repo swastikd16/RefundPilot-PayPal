@@ -5,7 +5,7 @@ import CaseList from './components/CaseList';
 import CaseDetail from './components/CaseDetail';
 import NewCaseModal from './components/NewCaseModal';
 import ErrorBoundary from './components/ErrorBoundary';
-import { fetchCases, fetchCase, createCase, seedDemoCase } from './api';
+import { fetchCases, fetchCase, createCase, seedDemoCase, resetDatabase } from './api';
 
 export default function App() {
   const [cases, setCases] = useState([]);
@@ -15,6 +15,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const loadAllCases = async () => {
     try {
@@ -71,12 +72,29 @@ export default function App() {
     }
   };
 
+  const handleResetData = async () => {
+    if (!window.confirm('Reset all case data back to empty state for a fresh demo run?')) return;
+    try {
+      setResetting(true);
+      await resetDatabase();
+      setSelectedCaseId(null);
+      setSelectedCaseData(null);
+      await loadAllCases();
+    } catch (err) {
+      alert(`Reset failed: ${err.message}`);
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div>
       <Header
         onOpenNewCase={() => setIsModalOpen(true)}
         onSeedDemo={handleSeedDemo}
+        onReset={handleResetData}
         seeding={seeding}
+        resetting={resetting}
       />
 
       <main className="app-container">

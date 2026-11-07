@@ -127,3 +127,11 @@ export async function seedDemoCase() {
   return res.json();
 }
 
+export async function resetDatabase() {
+  const res = await fetch(`${API_BASE}/demo/reset`, {
+    method: 'POST'
+  });
+  if (!res.ok) throw new Error('Failed to reset database');
+  return res.json();
+}
+

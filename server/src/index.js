@@ -28,7 +28,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Seed demo case endpoint for judges/testers (SRS Appendix A)
+// Seed demo case endpoint
 app.post('/api/demo/seed', async (req, res) => {
   try {
     // Clear previous demo records if requested
@@ -42,7 +42,7 @@ app.post('/api/demo/seed', async (req, res) => {
 
     const demoCase = await prisma.refundCase.create({
       data: {
-        userId: 'demo-judge-user',
+        userId: 'demo-buyer',
         complaintText: 'Sony WH-1000XM5 headphones arrived with a cracked right earcup. The box was crushed in transit. Customer wants a full refund or immediate replacement.',
         issueType: 'DAMAGED_ITEM',
         requestedOutcome: 'REFUND',
@@ -93,7 +93,7 @@ app.post('/api/demo/seed', async (req, res) => {
         },
         aiAnalyses: {
           create: {
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.5-flash-lite',
             issueClassification: 'DAMAGED_ITEM',
             customerGoal: 'Request a full refund',
             customerClaimsJson: JSON.stringify([
@@ -122,6 +122,24 @@ app.post('/api/demo/seed', async (req, res) => {
     });
 
     res.json({ message: 'Seeded demo case successfully', caseId: demoCase.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reset database endpoint for clean demo recording
+app.post('/api/demo/reset', async (req, res) => {
+  try {
+    await prisma.caseEvent.deleteMany({});
+    await prisma.resolutionAction.deleteMany({});
+    await prisma.merchantInteraction.deleteMany({});
+    await prisma.aIAnalysis.deleteMany({});
+    await prisma.evidenceItem.deleteMany({});
+    await prisma.paymentSnapshot.deleteMany({});
+    await prisma.purchaseReference.deleteMany({});
+    await prisma.refundCase.deleteMany({});
+
+    res.json({ success: true, message: 'All case data reset successfully.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

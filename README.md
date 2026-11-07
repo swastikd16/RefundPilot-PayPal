@@ -27,6 +27,22 @@
 
 ## 🛠️ Architecture & Tech Stack
 
+```mermaid
+flowchart TD
+    User(["👤 Customer / User"]) <-->|Voice or Text Intake| UI["💻 React + Vite Frontend\n(Tri-Color Grounding & Audio Dictation)"]
+    UI <-->|REST API + Two-Phase Confirmation| Server["⚙️ Express.js Orchestrator & State Engine"]
+    
+    subgraph Core ["Deterministic Core Engine"]
+      Server <-->|Schema Persistence| DB[("🗄️ SQLite Database\n(Prisma ORM)")]
+      Server <-->|Transition Rules & Idempotency| SM["🔒 State Machine & Security Token Guard"]
+    end
+
+    subgraph Integrations ["External Service Adapters"]
+      Server <-->|Structured JSON Triage & Vision Check| Gemini["🤖 Google Gemini 3.5 Flash Lite\n(Strict JSON Schema)"]
+      Server <-->|OAuth 2.0, Captures & Refunds| PayPal["💳 PayPal REST API v2\n(Sandbox Environment)"]
+    end
+```
+
 - **Frontend**: React 18, Vite, Lucide Icons, Vanilla CSS (with native Light & Dark mode support).
 - **Backend**: Node.js v22, Express, Prisma ORM, SQLite (`dev.db`).
 - **AI Orchestration**: Google Gemini 3.5 Flash Lite with structured JSON schema outputs (`responseMimeType: "application/json"`), multimodal visual inspection, and prompt injection defense.

@@ -9,6 +9,7 @@ import Timeline from './Timeline';
 import RefundModal from './RefundModal';
 import PolicyAnalyzerModal from './PolicyAnalyzerModal';
 import DisputeEscalatorGuide from './DisputeEscalatorGuide';
+import StepProgress from './StepProgress';
 import { proposeAction, updateCase, refreshPaymentStatus, exportDisputePacket } from '../api';
 
 export default function CaseDetail({ caseData, onBack, onRefresh }) {
@@ -179,6 +180,9 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
             </span>
           </div>
         </div>
+
+        {/* 4-Step Resolution Progress Stepper */}
+        <StepProgress currentState={caseData.state} />
       </div>
 
       {/* Tri-Color Grounding Container */}
