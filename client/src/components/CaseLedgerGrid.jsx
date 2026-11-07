@@ -143,7 +143,7 @@ export default function CaseLedgerGrid({ cases = [], onSelectCase }) {
         </div>
       </div>
 
-      <div style={{ height: '360px', width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <AgGridReact
           ref={gridRef}
           rowData={rowData}
@@ -151,6 +151,7 @@ export default function CaseLedgerGrid({ cases = [], onSelectCase }) {
           quickFilterText={quickFilterText}
           pagination={true}
           paginationPageSize={10}
+          paginationPageSizeSelector={[10, 20, 50, 100]}
           domLayout="autoHeight"
           rowSelection="single"
           onRowClicked={(event) => {
