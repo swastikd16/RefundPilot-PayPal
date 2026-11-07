@@ -21,21 +21,27 @@ export default function App() {
     try {
       setLoading(true);
       const data = await fetchCases();
-      setCases(data);
+      setCases(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching cases:', err);
+      setCases([]);
     } finally {
       setLoading(false);
     }
   };
 
   const loadCaseDetails = async (id) => {
+    if (!id || id === 'null' || id === 'undefined') return;
     try {
       const data = await fetchCase(id);
-      setSelectedCaseData(data);
-      setSelectedCaseId(id);
+      if (data && data.id) {
+        setSelectedCaseData(data);
+        setSelectedCaseId(id);
+      }
     } catch (err) {
       console.error('Error fetching case detail:', err);
+      setSelectedCaseId(null);
+      setSelectedCaseData(null);
     }
   };
 

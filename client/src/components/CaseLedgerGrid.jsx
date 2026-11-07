@@ -9,26 +9,28 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function CaseLedgerGrid({ cases = [], onSelectCase }) {
   const gridRef = useRef(null);
   const [quickFilterText, setQuickFilterText] = useState('');
+  const safeCases = Array.isArray(cases) ? cases : [];
 
   const rowData = useMemo(() => {
-    return cases.map((c) => {
+    return safeCases.map((c) => {
       const purchase = c.purchaseReferences?.[0];
       const payment = c.paymentSnapshots?.[0];
+      const caseIdStr = c.id ? String(c.id) : 'CASE';
       return {
         id: c.id,
-        shortId: c.id.substring(0, 10),
-        complaintText: c.complaintText,
-        issueType: c.issueType,
-        state: c.state,
+        shortId: caseIdStr.substring(0, 10),
+        complaintText: c.complaintText || '',
+        issueType: c.issueType || 'UNCLEAR',
+        state: c.state || 'NEW',
         amount: purchase?.amount ? `$${purchase.amount.toFixed(2)}` : '$0.00',
         currency: purchase?.currency || 'USD',
         captureId: purchase?.captureId || 'Unlinked',
         status: payment?.status || 'UNKNOWN',
         sourceType: purchase?.sourceType || 'PAYPAL_SANDBOX',
-        createdAt: new Date(c.createdAt).toLocaleDateString()
+        createdAt: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Today'
       };
     });
-  }, [cases]);
+  }, [safeCases]);
 
   const columnDefs = useMemo(() => [
     {

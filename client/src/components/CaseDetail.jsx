@@ -15,6 +15,7 @@ import AstropodsLifecycleViewer from './AstropodsLifecycleViewer';
 import { proposeAction, updateCase, refreshPaymentStatus, exportDisputePacket } from '../api';
 
 export default function CaseDetail({ caseData, onBack, onRefresh }) {
+  if (!caseData) return null;
   const [proposing, setProposing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [activeAction, setActiveAction] = useState(null);

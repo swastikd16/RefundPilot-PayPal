@@ -8,10 +8,33 @@
     <meta name="color-scheme" content="light dark" />
     <!-- FOUC prevention inline script -->
     <script>
+      window.addEventListener('error', function(e) {
+        console.error('Fatal Script Error:', e.error || e.message);
+        var box = document.getElementById('debug-box');
+        if (!box) {
+          box = document.createElement('div');
+          box.id = 'debug-box';
+          box.style = 'position:fixed;top:0;left:0;right:0;background:#7f1d1d;color:#ffffff;padding:24px;font-family:monospace;font-size:14px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.5);line-height:1.5;';
+          document.body.appendChild(box);
+        }
+        box.innerHTML = '<h3 style="margin:0 0 10px 0;font-size:16px;">⚠️ Startup Error Detected</h3><pre style="white-space:pre-wrap;background:#450a0a;padding:12px;border-radius:6px;">' + (e.error ? e.error.stack : (e.message + ' at ' + e.filename + ':' + e.lineno)) + '</pre>';
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Fatal Promise Rejection:', e.reason);
+        var box = document.getElementById('debug-box');
+        if (!box) {
+          box = document.createElement('div');
+          box.id = 'debug-box';
+          box.style = 'position:fixed;top:0;left:0;right:0;background:#7f1d1d;color:#ffffff;padding:24px;font-family:monospace;font-size:14px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.5);line-height:1.5;';
+          document.body.appendChild(box);
+        }
+        box.innerHTML = '<h3 style="margin:0 0 10px 0;font-size:16px;">⚠️ Promise Rejection</h3><pre style="white-space:pre-wrap;background:#450a0a;padding:12px;border-radius:6px;">' + (e.reason ? (e.reason.stack || e.reason) : 'Promise rejected') + '</pre>';
+      });
       try {
         const theme = localStorage.getItem("color-scheme");
         if (theme === "light" || theme === "dark") {
-          document.querySelector('meta[name="color-scheme"]').content = theme;
+          const meta = document.querySelector('meta[name="color-scheme"]');
+          if (meta) meta.content = theme;
           document.documentElement.setAttribute('data-theme', theme);
         }
       } catch (e) {}

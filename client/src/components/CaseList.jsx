@@ -4,7 +4,9 @@ import CaseLedgerGrid from './CaseLedgerGrid';
 
 export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'grid'
-  if (!cases || cases.length === 0) {
+  const caseList = Array.isArray(cases) ? cases : [];
+
+  if (caseList.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'var(--card-bg)', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
         <ShieldAlert size={48} style={{ color: 'var(--accent-paypal-light)', marginBottom: '1rem' }} />
@@ -47,10 +49,10 @@ export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
       </div>
 
       {viewMode === 'grid' ? (
-        <CaseLedgerGrid cases={cases} onSelectCase={onSelectCase} />
+        <CaseLedgerGrid cases={caseList} onSelectCase={onSelectCase} />
       ) : (
         <div className="cases-grid">
-        {cases.map((c) => {
+        {caseList.map((c) => {
           const purchase = c.purchaseReferences?.[0];
           const payment = c.paymentSnapshots?.[0];
           const amountDisplay = purchase?.amount ? `$${purchase.amount.toFixed(2)} ${purchase.currency}` : 'Amount Unknown';
