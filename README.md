@@ -52,6 +52,23 @@ flowchart TD
 - **AI Orchestration**: Google Gemini 3.5 Flash Lite with structured JSON schema outputs (`responseMimeType: "application/json"`), multimodal visual inspection, and prompt injection defense.
 - **Payment Gateway**: PayPal v2 REST API (OAuth 2.0, Captures, Refunds) in Sandbox mode.
 
+## 🤝 Sponsor Integrations
+
+RefundPilot AI integrates with all 10 ecosystem partners to deliver an enterprise-grade dispute copilot:
+
+| Sponsor | Integration Point | Implementation Details |
+|---|---|---|
+| **AG Grid** | Case Audit Ledger | Enterprise data grid (`CaseLedgerGrid.jsx`) with multi-column sorting, status filtering, and 1-click CSV export of dispute cases. |
+| **APIMatic** | OpenAPI & SDK Generation | Contextual OpenAPI 3.0 specification (`docs/openapi.yaml`, `docs/apimatic-context.json`) enabling automated SDK generation across 10+ programming languages. |
+| **Astropods** | Multi-Agent Lifecycle Container | Multi-stage autonomous agent runtime (`server/src/agents/astropodsRunner.js`, `AstropodsLifecycleViewer.jsx`) orchestrating Intake, Evidence Audit, Merchant Liaison, and Settlement agents. |
+| **Bryntum** | Dispute Protection Scheduler | Timeline visualization (`BryntumDisputeTimeline.jsx`) tracking the 72-hour merchant SLA and 180-day statutory PayPal Buyer Protection window. |
+| **Channel3** | Unified Product Catalog | Direct catalog verification (`server/src/services/channel3.js`) querying 100M+ e-commerce product records to validate specs, MSRP, and fragility flags without scraping. |
+| **Elastic** | Precedent Vector Search | Hybrid & vector search engine (`server/src/services/elasticSearch.js`) indexing past dispute resolutions to calculate historical merchant win rates and optimal next steps. |
+| **KERNEL** | Live Cloud Browser Navigation | Headless cloud browser service (`server/src/services/kernelBrowser.js`, `PolicyAnalyzerModal.jsx`) that crawls live merchant domains to extract return policies in real-time. |
+| **Postman** | API Test Collection & Docs | Complete Postman collection (`docs/RefundPilot.postman_collection.json`) with environment configurations verifying PayPal OAuth, case lifecycle, and sandbox refunds. |
+| **Render** | Cloud Infrastructure Blueprint | Declarative deployment specification (`render.yaml`) configuring production web services, health checks, and build steps. |
+| **Zapier** | Settlement Workflow Automation | Event-driven webhook adapter (`server/src/services/zapierWebhook.js`) triggering automated notifications (Slack, CRM, email) when PayPal refunds are confirmed. |
+
 ---
 
 ## ⚡ Quickstart
@@ -126,6 +143,9 @@ npm run test:ai
 
 # Test 3: End-to-End Resolution Journey
 npm test
+
+# Test 4: Sponsor Integration Verification Suite
+npm run test:sponsors
 
 # Verify PayPal Sandbox credentials
 npm run verify:paypal
