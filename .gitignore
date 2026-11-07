@@ -17,6 +17,9 @@ uploads/
 *.db
 *.db-journal
 
+# PDF specification documents
+*.pdf
+
 # Production build outputs
 dist/
 build/
@@ -33,3 +36,4 @@ yarn-error.log*
 Thumbs.db
 .idea/
 .vscode/
+

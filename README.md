@@ -1,40 +1,40 @@
-# RefundPilot AI — PayPal AI Hackathon 🚀
+# RefundPilot AI — Intelligent Refund & Dispute Resolution Copilot 🚀
 
-> **AI-Powered End-to-End Refund Resolution & Dispute Guard**  
-> Built strictly according to the [RefundPilot AI SRS v1.0](./RefundPilot_AI_SRS.pdf) specification.
-
-RefundPilot AI coordinates purchase refund disputes from natural language complaint intake to verified PayPal Sandbox settlement. It bridges natural language understanding with deterministic financial guardrails.
+> **AI-assisted refund resolution and case-management system for PayPal transactions.**  
+> Bridges natural language customer intake with deterministic business rules, authoritative PayPal REST verification, and human-in-the-loop security controls.
 
 ---
 
-## 🌟 Key Highlights
+## 🌟 Key Capabilities
 
-1. **Natural Language Intake**: Customers explain their problem in everyday language; Gemini AI classifies the defect (`DAMAGED_ITEM`, `DEFECTIVE`, `NOT_RECEIVED`, etc.), extracts order references, and identifies missing evidence.
-2. **Tri-Color Grounding Hub**:
-   - 🟢 **Verified PayPal Facts**: Live data from PayPal Sandbox API (capture ID, captured amount, confirmed status).
-   - 🟡 **Customer Claims**: Stated user assertions and missing evidence checklist.
-   - 🔵 **AI Guidance & Policy**: Grounded advice and merchant policies with explicit disclaimers.
-3. **Two-Phase Consequential Action Guard**:
-   - AI **never** triggers financial transactions autonomously.
-   - Sandbox refunds generate a single-use, 10-minute expiring cryptographic confirmation token requiring explicit human confirmation.
+1. **Natural Language Intake**: Customers explain their purchase issue in everyday words (or via voice dictation). RefundPilot classifies the issue (`DAMAGED_ITEM`, `NOT_RECEIVED`, `WRONG_ITEM`, etc.), extracts order references, and identifies missing evidence.
+2. **Tri-Color Grounding**:
+   - 🟢 **Verified Facts**: Authoritative live status directly from the PayPal REST API (Capture ID, captured amount, payment state).
+   - 🟡 **Customer Claims**: Unverified user statements and a checklist of missing evidence.
+   - 🔵 **AI Guidance & Policy**: Action recommendations, return windows, and merchant policies with clear disclaimers.
+3. **Safe Execution Guard**:
+   - AI models **cannot** trigger financial transactions autonomously.
+   - Refunds require explicit human confirmation bound by a single-use, 10-minute expiring cryptographic token.
 4. **Deterministic State Machine**:
-   - Enforces transition rules (`NEW` → `INVESTIGATING` → `MERCHANT_ACTION_REQUIRED` → `MERCHANT_RESPONSE_RECEIVED` → `RESOLVED`).
-   - Prevents unauthorized jumps (e.g., closing a case does not imply a refund occurred).
+   - Strictly enforced transitions: `NEW` → `INVESTIGATING` → `MERCHANT_ACTION_REQUIRED` → `MERCHANT_RESPONSE_RECEIVED` → `RESOLVED`.
+   - Prevents unauthorized jumps or model overrides (e.g., closing a case does not imply a refund was completed).
 5. **Traceable Audit Timeline**:
-   - Append-only event history tracking every action, AI inference, merchant response, and PayPal API confirmation.
+   - Append-only event history tracking every action, AI inference, merchant interaction, and verified PayPal API response.
+6. **Dispute Packet Exporter**:
+   - Generates a formal Markdown evidence packet with transaction timestamps and evidence lists ready for PayPal Resolution Center submission.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Architecture & Tech Stack
 
-- **Frontend**: React 18, Vite, Lucide Icons, Vanilla CSS (high-contrast, accessible).
+- **Frontend**: React 18, Vite, Lucide Icons, Vanilla CSS (with native Light & Dark mode support).
 - **Backend**: Node.js v22, Express, Prisma ORM, SQLite (`dev.db`).
-- **AI Orchestration**: Google Gemini API (`gemini-2.5-flash`) with structured JSON schema outputs & rule-based offline fallback.
+- **AI Orchestration**: Google Gemini 3.5 Flash Lite with structured JSON schema outputs (`responseMimeType: "application/json"`), multimodal visual inspection, and prompt injection defense.
 - **Payment Gateway**: PayPal v2 REST API (OAuth 2.0, Captures, Refunds) in Sandbox mode.
 
 ---
 
-## ⚡ Quickstart (2 Steps)
+## ⚡ Quickstart
 
 ### 1. Configure Environment Variables
 
@@ -50,7 +50,7 @@ DATABASE_URL="file:./dev.db"
 APP_BASE_URL=http://localhost:5173
 ```
 
-*(Note: If API keys are not supplied, the application automatically runs in demo mode with pre-seeded fixtures and offline rule extraction so you can test immediately!)*
+*(Note: The application includes offline fallbacks and labeled fixtures so it can also be evaluated in offline mode).*
 
 ### 2. Start Backend & Frontend
 
@@ -70,43 +70,43 @@ npm run client
 
 ---
 
+## 🎬 Interactive Walkthrough Demo
+
+1. Open **`http://localhost:5173`**.
+2. **Launch a Quick Scenario**:
+   - Click the **"Cracked Audio Headphones"** card (or click **"Load Sample Case"** in the top navigation).
+3. **Review Grounded Tri-Color Insights**:
+   - 🟢 **Verified Facts**: PayPal Capture `DEMO-CAP-SONY1000`, `$399.00 USD` (COMPLETED).
+   - 🟡 **Customer Claims**: Cracked earcup, missing photo evidence.
+   - 🔵 **AI Guidance**: Seller contact recommended prior to dispute escalation.
+4. **Attach Evidence**:
+   - In the **Evidence Vault**, upload a defect image. Gemini performs an automated visual check and logs an `EVIDENCE_UPLOADED` event.
+5. **Coordinate with Merchant**:
+   - Under **Merchant Resolution Hub**, click **"AI Draft Inquiry"** to generate a polite message, then approve and send.
+   - Use the **Simulate Merchant Response** dropdown, select **"Merchant: Accept Claim"**, and record the reply. The case advances to `MERCHANT_RESPONSE_RECEIVED`.
+6. **Authorize Refund**:
+   - Click **"Execute PayPal Sandbox Refund"**.
+   - Review the target capture and the single-use authorization token in the confirmation modal.
+   - Click **"Confirm & Authorize Refund"** to execute the refund against PayPal Sandbox. The payment status updates to `REFUNDED` and the case transitions to `RESOLVED`.
+7. **Export Dispute Packet**:
+   - Click **"Export Dispute Packet"** in the top bar to download the complete case history as a formatted Markdown dispute document.
+
+---
+
 ## 🧪 Automated Verification Suite
 
-Run our assert-based self-checks covering SRS test scenarios (TC-001 through TC-016):
+Run our assert-based self-checks covering state rules, AI extraction, and end-to-end flows:
 
 ```bash
-# Test 1: State Machine & Policy Rules
+# Test 1: State Machine & Transition Rules
 npm run test:state
 
-# Test 2: AI Structured Extraction & Injection Defense
+# Test 2: AI Structured Extraction & Prompt Injection Guard
 npm run test:ai
 
-# Test 3: Full End-to-End Damaged Item Scenario
+# Test 3: End-to-End Resolution Journey
 npm test
 
 # Verify PayPal Sandbox credentials
 npm run verify:paypal
 ```
-
----
-
-## 🎬 2-Minute Judge Demo Walkthrough
-
-1. Open **`http://localhost:5173`**.
-2. Click **"Seed Demo Case"** in the top navigation:
-   - This instantly loads the SRS reference case (*Sony WH-1000XM5 headphones arrived with a cracked right earcup*).
-3. Observe the **Tri-Color Grounding cards**:
-   - 🟢 Verified PayPal Capture: `$399.00 USD` (COMPLETED).
-   - 🟡 Customer Claims & Missing Evidence Checklist.
-   - 🔵 AI Guidance advising seller contact before formal escalation.
-4. Go to **Evidence Vault**:
-   - Upload any sample defect photo (e.g. `defect.png`). Notice the timeline appends an `EVIDENCE_UPLOADED` event.
-5. In the **Merchant Resolution Hub**:
-   - Click **"AI Draft Inquiry"** → Review the auto-generated professional message → Click **"Approve & Send to Seller"**.
-   - Use the **Simulate Merchant Response** selector to choose **"Merchant: Accept Claim"** and click **Record Reply**.
-   - Notice the case automatically advances to `MERCHANT_RESPONSE_RECEIVED`.
-6. Click **"Execute PayPal Sandbox Refund"**:
-   - A modal appears showing the **Expiring Confirmation Token** and target capture details.
-   - Click **"Confirm & Authorize Refund"**.
-   - The verified refund is executed, PayPal snapshot status updates to `REFUNDED`, and the case securely transitions to `RESOLVED` with an immutable audit log.
-

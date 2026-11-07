@@ -8,7 +8,7 @@ export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
         <ShieldAlert size={48} style={{ color: 'var(--accent-paypal-light)', marginBottom: '1rem' }} />
         <h2>No refund cases created yet</h2>
         <p style={{ color: 'var(--text-muted)', margin: '0.75rem 0 1.5rem 0' }}>
-          File a new complaint in natural language, or click "Seed Demo Case" to load the SRS reference walkthrough.
+          File a new complaint in natural language, or click "Load Sample Case" above to start an interactive walkthrough.
         </p>
         <button className="btn-primary" onClick={onOpenNewCase} style={{ margin: '0 auto' }}>
           Create First Case

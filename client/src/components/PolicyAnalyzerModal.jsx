@@ -44,7 +44,7 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
             <div>
               <h2>Merchant Policy Auto-Triage</h2>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Powered by Gemini 3.5 Flash Lite (SRS §3.5 & FR-040)
+                Automated Policy & Return Window Analysis
               </span>
             </div>
           </div>

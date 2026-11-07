@@ -36,7 +36,7 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
             <div>
               <h2>Authorize PayPal Sandbox Refund</h2>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Two-Phase Consequential Action Guard (SRS §7.3)
+                Two-Phase Security Confirmation
               </span>
             </div>
           </div>

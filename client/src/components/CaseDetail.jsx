@@ -181,7 +181,7 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
         </div>
       </div>
 
-      {/* Tri-Color Grounding Container (SRS §5.1 & §7.1) */}
+      {/* Tri-Color Grounding Container */}
       <div className="grounding-grid">
         {/* 1. Verified PayPal Facts */}
         <div className="grounding-box box-verified">

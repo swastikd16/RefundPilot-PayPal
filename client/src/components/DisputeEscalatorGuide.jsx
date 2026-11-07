@@ -44,7 +44,7 @@ export default function DisputeEscalatorGuide({ caseData }) {
               PayPal Resolution Center Escalator Guide
             </h3>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              SRS UC-05: Formal Dispute Guidance (180-Day Window)
+              Official PayPal Buyer Protection (180-Day Window)
             </span>
           </div>
         </div>

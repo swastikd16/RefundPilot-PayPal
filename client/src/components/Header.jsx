@@ -34,9 +34,9 @@ export default function Header({ onOpenNewCase, onSeedDemo, seeding }) {
         <div className="brand-logo">RP</div>
         <div className="brand-text">
           <h1>
-            RefundPilot AI <span className="brand-tag">PayPal AI Hackathon</span>
+            RefundPilot AI <span className="brand-tag">PayPal Dispute Copilot</span>
           </h1>
-          <p>AI-Powered End-to-End Refund Resolution & Dispute Guard</p>
+          <p>Intelligent Refund & Dispute Resolution</p>
         </div>
       </div>
 
@@ -60,10 +60,10 @@ export default function Header({ onOpenNewCase, onSeedDemo, seeding }) {
           className="btn-secondary" 
           onClick={onSeedDemo} 
           disabled={seeding}
-          title="Seed Sony WH-1000XM5 Damaged Item scenario from SRS"
+          title="Load sample purchase scenario"
         >
           <Sparkles size={16} />
-          {seeding ? 'Seeding...' : 'Seed Demo Case'}
+          {seeding ? 'Loading...' : 'Load Sample Case'}
         </button>
 
         <button className="btn-primary" onClick={onOpenNewCase}>

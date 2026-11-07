@@ -364,7 +364,7 @@ button {
 }
 .back-btn:hover { color: var(--text-main); }
 
-/* Tri-Color Grounding Container (SRS §5.1) */
+/* Tri-Color Grounding Container */
 .grounding-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

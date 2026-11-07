@@ -59,7 +59,7 @@ export default function HomeHero({ onStartIntake, onSelectScenario }) {
         Resolve Purchase Disputes with <span className="gradient-text">Authoritative AI</span>
       </h1>
       <p className="hero-subheading">
-        Describe what went wrong in everyday language. RefundPilot AI validates authoritative PayPal Sandbox captures, gathers verifiable evidence, drafts seller inquiries, and safeguards refunds through two-phase confirmation.
+        Explain your issue in everyday words. RefundPilot cross-checks your purchase against PayPal records, gathers evidence, drafts seller inquiries, and secures your refund.
       </p>
 
       {/* Hero Natural Language Intake Bar */}
@@ -98,15 +98,15 @@ export default function HomeHero({ onStartIntake, onSelectScenario }) {
         </div>
       </div>
 
-      {/* Pre-Built Judge Scenarios */}
+      {/* Pre-Built Benchmark Scenarios */}
       <div className="hero-scenarios-section">
         <div className="scenarios-header">
           <span className="scenarios-title">
             <Sparkles size={15} style={{ color: 'var(--accent-paypal-light)' }} />
-            One-Click Benchmark Scenarios (SRS §13.2)
+            Quick-Start Purchase Scenarios
           </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Instant sandbox test fixtures
+            One-click interactive walkthroughs
           </span>
         </div>
 
