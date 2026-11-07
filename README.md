@@ -1,5 +1,9 @@
 # RefundPilot AI — Intelligent Refund & Dispute Resolution Copilot 🚀
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PayPal](https://img.shields.io/badge/PayPal-Sandbox_v2-00457C?logo=paypal&logoColor=white)](https://developer.paypal.com/)
+[![Gemini](https://img.shields.io/badge/Google_Gemini-3.5_Flash_Lite-8E75B2?logo=google&logoColor=white)](https://ai.google.dev/)
+
 > **AI-assisted refund resolution and case-management system for PayPal transactions.**  
 > Bridges natural language customer intake with deterministic business rules, authoritative PayPal REST verification, and human-in-the-loop security controls.
 
