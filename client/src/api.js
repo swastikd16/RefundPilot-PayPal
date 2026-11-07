@@ -103,13 +103,19 @@ export async function refreshPaymentStatus(caseId) {
   return res.json();
 }
 
-export async function analyzePolicy(caseId, policyText) {
+export async function analyzePolicy(caseId, policyText, merchantDomain = null) {
   const res = await fetch(`${API_BASE}/cases/${caseId}/policy-analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ policyText })
+    body: JSON.stringify({ policyText, merchantDomain })
   });
   if (!res.ok) throw new Error('Policy analysis failed');
+  return res.json();
+}
+
+export async function getAstropodsPlan(caseId) {
+  const res = await fetch(`${API_BASE}/cases/${caseId}/astropods`);
+  if (!res.ok) throw new Error('Failed to load Astropods plan');
   return res.json();
 }
 

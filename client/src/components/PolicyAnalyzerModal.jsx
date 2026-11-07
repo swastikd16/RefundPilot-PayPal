@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { BookOpen, Sparkles, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { BookOpen, Sparkles, CheckCircle, AlertCircle, ArrowRight, Globe } from 'lucide-react';
 import { analyzePolicy } from '../api';
 
 export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyzed }) {
   const [policyText, setPolicyText] = useState('');
+  const [merchantDomain, setMerchantDomain] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -12,12 +13,12 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
-    if (!policyText.trim()) return;
+    if (!policyText.trim() && !merchantDomain.trim()) return;
 
     try {
       setAnalyzing(true);
       setError(null);
-      const res = await analyzePolicy(caseId, policyText);
+      const res = await analyzePolicy(caseId, policyText, merchantDomain.trim() || null);
       setResult(res);
       if (onAnalyzed) onAnalyzed();
     } catch (err) {
@@ -33,6 +34,21 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
     );
   };
 
+  const handleCrawlKernel = async (domain) => {
+    setMerchantDomain(domain);
+    try {
+      setAnalyzing(true);
+      setError(null);
+      const res = await analyzePolicy(caseId, '', domain);
+      setResult(res);
+      if (onAnalyzed) onAnalyzed();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: '640px' }}>
@@ -44,7 +60,7 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
             <div>
               <h2>Merchant Policy Auto-Triage</h2>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Automated Policy & Return Window Analysis
+                Powered by Gemini AI & KERNEL Cloud Browser Policy Navigation
               </span>
             </div>
           </div>
@@ -53,9 +69,38 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
 
         {!result ? (
           <form onSubmit={handleAnalyze}>
+            {/* Live KERNEL Cloud Browser Quick Crawl */}
+            <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: '8px', padding: '0.85rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Globe size={14} style={{ color: '#818cf8' }} /> KERNEL Live Cloud Browser Crawl
+                </span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Automated Headless Extraction</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. merchant-store.com"
+                  value={merchantDomain}
+                  onChange={(e) => setMerchantDomain(e.target.value)}
+                  style={{ flex: 1, fontSize: '0.85rem' }}
+                />
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => handleCrawlKernel(merchantDomain || 'merchant-electronics.com')}
+                  disabled={analyzing}
+                  style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                >
+                  <Globe size={13} /> {analyzing ? 'Crawling...' : 'Crawl Live Policy'}
+                </button>
+              </div>
+            </div>
+
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                <label style={{ margin: 0 }}>Paste Merchant Policy Excerpt or Terms</label>
+                <label style={{ margin: 0 }}>Or Paste Merchant Policy Excerpt</label>
                 <button
                   type="button"
                   onClick={handlePreFillSample}
@@ -66,11 +111,10 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
               </div>
               <textarea
                 className="form-textarea"
-                rows={6}
+                rows={5}
                 placeholder="Paste the seller's return policy or terms from their website..."
                 value={policyText}
                 onChange={(e) => setPolicyText(e.target.value)}
-                required
               />
             </div>
 
@@ -84,7 +128,7 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
               <button type="button" className="btn-secondary" onClick={onClose} disabled={analyzing}>
                 Cancel
               </button>
-              <button type="submit" className="btn-primary" disabled={analyzing || !policyText.trim()}>
+              <button type="submit" className="btn-primary" disabled={analyzing || (!policyText.trim() && !merchantDomain.trim())}>
                 <Sparkles size={15} />
                 {analyzing ? 'Extracting Rules...' : 'Triage Policy Clauses'}
               </button>

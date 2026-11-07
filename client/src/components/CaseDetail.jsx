@@ -11,6 +11,7 @@ import PolicyAnalyzerModal from './PolicyAnalyzerModal';
 import DisputeEscalatorGuide from './DisputeEscalatorGuide';
 import StepProgress from './StepProgress';
 import BryntumDisputeTimeline from './BryntumDisputeTimeline';
+import AstropodsLifecycleViewer from './AstropodsLifecycleViewer';
 import { proposeAction, updateCase, refreshPaymentStatus, exportDisputePacket } from '../api';
 
 export default function CaseDetail({ caseData, onBack, onRefresh }) {
@@ -187,6 +188,9 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
 
         {/* Bryntum Resolution Timeline & SLA Scheduler */}
         <BryntumDisputeTimeline caseData={caseData} />
+
+        {/* Astropods Autonomous Agent Lifecycle Container */}
+        <AstropodsLifecycleViewer caseId={caseData.id} />
       </div>
 
       {/* Tri-Color Grounding Container */}
