@@ -39,8 +39,52 @@ export default function App() {
     }
   };
 
+  const navigateToCase = (id, pushState = true) => {
+    loadCaseDetails(id);
+    if (pushState) {
+      window.history.pushState({ caseId: id }, '', `?case=${id}`);
+    }
+  };
+
+  const navigateToHome = (pushState = true) => {
+    setSelectedCaseId(null);
+    setSelectedCaseData(null);
+    if (pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+    loadAllCases();
+  };
+
   useEffect(() => {
     loadAllCases();
+
+    // Check if initial URL has ?case=...
+    const params = new URLSearchParams(window.location.search);
+    const initialCase = params.get('case');
+    if (initialCase) {
+      loadCaseDetails(initialCase);
+    }
+
+    // Support browser / mouse back and forward button navigation
+    const handlePopState = (event) => {
+      const caseId = event.state?.caseId;
+      if (caseId) {
+        loadCaseDetails(caseId);
+      } else {
+        const queryParams = new URLSearchParams(window.location.search);
+        const queryCase = queryParams.get('case');
+        if (queryCase) {
+          loadCaseDetails(queryCase);
+        } else {
+          setSelectedCaseId(null);
+          setSelectedCaseData(null);
+          loadAllCases();
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const handleCreateCase = async (formData) => {
@@ -49,7 +93,7 @@ export default function App() {
       const newCase = await createCase(formData);
       setIsModalOpen(false);
       await loadAllCases();
-      await loadCaseDetails(newCase.id);
+      navigateToCase(newCase.id);
     } catch (err) {
       alert(`Failed to create case: ${err.message}`);
     } finally {
@@ -63,7 +107,7 @@ export default function App() {
       const res = await seedDemoCase();
       await loadAllCases();
       if (res.caseId) {
-        await loadCaseDetails(res.caseId);
+        navigateToCase(res.caseId);
       }
     } catch (err) {
       alert(`Seeding failed: ${err.message}`);
@@ -77,9 +121,7 @@ export default function App() {
     try {
       setResetting(true);
       await resetDatabase();
-      setSelectedCaseId(null);
-      setSelectedCaseData(null);
-      await loadAllCases();
+      navigateToHome();
     } catch (err) {
       alert(`Reset failed: ${err.message}`);
     } finally {
@@ -90,6 +132,7 @@ export default function App() {
   return (
     <div>
       <Header
+        onGoHome={() => navigateToHome()}
         onOpenNewCase={() => setIsModalOpen(true)}
         onSeedDemo={handleSeedDemo}
         onReset={handleResetData}
@@ -110,9 +153,11 @@ export default function App() {
             <CaseDetail
               caseData={selectedCaseData}
               onBack={() => {
-                setSelectedCaseId(null);
-                setSelectedCaseData(null);
-                loadAllCases();
+                if (window.history.state?.caseId) {
+                  window.history.back();
+                } else {
+                  navigateToHome();
+                }
               }}
               onRefresh={() => loadCaseDetails(selectedCaseId)}
             />
@@ -134,7 +179,7 @@ export default function App() {
               <div style={{ marginTop: '2.5rem' }}>
                 <CaseList
                   cases={cases}
-                  onSelectCase={(id) => loadCaseDetails(id)}
+                  onSelectCase={(id) => navigateToCase(id)}
                   onOpenNewCase={() => setIsModalOpen(true)}
                 />
               </div>

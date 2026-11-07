@@ -98,6 +98,31 @@ export default function HomeHero({ onStartIntake, onSelectScenario }) {
         </div>
       </div>
 
+      {/* Ecosystem Sponsors Strip */}
+      <div style={{
+        marginTop: '1.25rem',
+        marginBottom: '1.75rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        gap: '0.45rem'
+      }}>
+        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginRight: '0.25rem', fontWeight: 600 }}>
+          Sponsor Integrations:
+        </span>
+        <span className="sponsored-badge">AG Grid</span>
+        <span className="sponsored-badge">APIMatic</span>
+        <span className="sponsored-badge">Astropods</span>
+        <span className="sponsored-badge">Bryntum</span>
+        <span className="sponsored-badge">Channel3</span>
+        <span className="sponsored-badge">Elastic</span>
+        <span className="sponsored-badge">KERNEL</span>
+        <span className="sponsored-badge">Postman</span>
+        <span className="sponsored-badge">Render</span>
+        <span className="sponsored-badge">Zapier</span>
+      </div>
+
       {/* Pre-Built Benchmark Scenarios */}
       <div className="hero-scenarios-section">
         <div className="scenarios-header">

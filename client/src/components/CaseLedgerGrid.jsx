@@ -130,9 +130,10 @@ export default function CaseLedgerGrid({ cases = [], onSelectCase }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <span className="sponsored-badge">Sponsored: AG Grid</span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Powered by AG Grid Community
+            Audit Ledger
           </span>
           <button className="btn-secondary" onClick={exportCsv} style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}>
             <Download size={13} /> Export CSV
@@ -158,3 +159,4 @@ export default function CaseLedgerGrid({ cases = [], onSelectCase }) {
     </div>
   );
 }
+

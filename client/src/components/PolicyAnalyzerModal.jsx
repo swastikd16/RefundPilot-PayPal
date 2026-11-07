@@ -75,7 +75,10 @@ export default function PolicyAnalyzerModal({ isOpen, onClose, caseId, onAnalyze
                 <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <Globe size={14} style={{ color: '#818cf8' }} /> KERNEL Live Cloud Browser Crawl
                 </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Automated Headless Extraction</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span className="sponsored-badge">Sponsored: KERNEL</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Headless Browser</span>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <input

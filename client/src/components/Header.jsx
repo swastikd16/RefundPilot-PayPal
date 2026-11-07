@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Sparkles, PlusCircle, Sun, Moon, RotateCcw } from 'lucide-react';
 
-export default function Header({ onOpenNewCase, onSeedDemo, onReset, seeding, resetting }) {
+export default function Header({ onGoHome, onOpenNewCase, onSeedDemo, onReset, seeding, resetting }) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('color-scheme');
@@ -30,7 +30,12 @@ export default function Header({ onOpenNewCase, onSeedDemo, onReset, seeding, re
 
   return (
     <header className="app-header">
-      <div className="brand">
+      <div 
+        className="brand" 
+        onClick={onGoHome} 
+        style={{ cursor: 'pointer' }}
+        title="Go to Home Dashboard"
+      >
         <div className="brand-logo">RP</div>
         <div className="brand-text">
           <h1>

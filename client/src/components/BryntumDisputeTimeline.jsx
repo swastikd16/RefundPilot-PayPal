@@ -24,9 +24,12 @@ export default function BryntumDisputeTimeline({ caseData }) {
             <Calendar size={18} />
           </div>
           <div>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', margin: 0 }}>
-              Resolution Timeline & Protection Schedule
-            </h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', margin: 0 }}>
+                Resolution Timeline & Protection Schedule
+              </h4>
+              <span className="sponsored-badge">Sponsored: Bryntum</span>
+            </div>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Interactive Dispute Schedule • 72h Merchant SLA & 180d PayPal Protection
             </span>
@@ -76,3 +79,4 @@ export default function BryntumDisputeTimeline({ caseData }) {
     </div>
   );
 }
+

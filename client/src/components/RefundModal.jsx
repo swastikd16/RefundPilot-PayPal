@@ -19,6 +19,11 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
       onConfirmed();
       onClose();
     } catch (err) {
+      if (err.message && err.message.includes('EXECUTED')) {
+        onConfirmed();
+        onClose();
+        return;
+      }
       setError(err.message);
     } finally {
       setSubmitting(false);
@@ -35,9 +40,12 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
             </div>
             <div>
               <h2>Authorize PayPal Sandbox Refund</h2>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Two-Phase Security Confirmation
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '2px' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Two-Phase Security Confirmation
+                </span>
+                <span className="sponsored-badge">Sponsored: Zapier</span>
+              </div>
             </div>
           </div>
           <button className="back-btn" onClick={onClose}><X size={20} /></button>

@@ -581,6 +581,16 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
       return res.status(404).json({ error: 'Action record not found.' });
     }
 
+    // Idempotent guard: if already executed, return success cleanly
+    if (action.status === 'EXECUTED') {
+      return res.json({
+        success: true,
+        refundId: action.externalReference || 'EXECUTED',
+        status: 'COMPLETED',
+        alreadyExecuted: true
+      });
+    }
+
     if (action.status !== 'PENDING_CONFIRMATION') {
       return res.status(400).json({ error: `Action cannot be confirmed in status: ${action.status}` });
     }

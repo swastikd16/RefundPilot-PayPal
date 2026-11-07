@@ -45,6 +45,7 @@ export default function AstropodsLifecycleViewer({ caseId }) {
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
                 Astropods Agent Runtime Container
               </span>
+              <span className="sponsored-badge">Sponsored: Astropods</span>
               <span style={{ fontSize: '0.7rem', background: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', padding: '1px 6px', borderRadius: '4px' }}>
                 {plan.containerId}
               </span>
@@ -108,3 +109,4 @@ export default function AstropodsLifecycleViewer({ caseId }) {
     </div>
   );
 }
+

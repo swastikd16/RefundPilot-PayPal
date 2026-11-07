@@ -197,9 +197,12 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
       <div className="grounding-grid">
         {/* 1. Verified PayPal Facts */}
         <div className="grounding-box box-verified">
-          <div className="box-title">
-            <CheckCircle2 size={16} />
-            Verified Facts (PayPal API)
+          <div className="box-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <CheckCircle2 size={16} />
+              Verified Facts (PayPal API)
+            </div>
+            <span className="sponsored-badge">Sponsored: Channel3</span>
           </div>
           <div className="fact-item">
             <span className="label">Capture ID</span>
@@ -248,9 +251,12 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
 
         {/* 3. AI Guidance & Policy Rules */}
         <div className="grounding-box box-guidance">
-          <div className="box-title">
-            <Sparkles size={16} />
-            AI Guidance & Policy Checks
+          <div className="box-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Sparkles size={16} />
+              AI Guidance & Policy Checks
+            </div>
+            <span className="sponsored-badge">Sponsored: Elastic</span>
           </div>
           <p style={{ fontSize: '0.8rem', lineHeight: 1.4, marginBottom: '0.5rem' }}>
             <strong>Recommendation:</strong> {analysis?.recommendedAction?.replace(/_/g, ' ') || 'PREPARE MERCHANT REQUEST'}
