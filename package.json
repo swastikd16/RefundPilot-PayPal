@@ -1,0 +1,15 @@
+{
+  "name": "paypal-ai-hackathon-refundpilot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "db:push": "npm --prefix server run db:push",
+    "verify:paypal": "npm --prefix server run verify:paypal",
+    "test": "npm --prefix server run test:e2e",
+    "test:state": "npm --prefix server run test:state",
+    "test:ai": "npm --prefix server run test:ai"
+  }
+}
+

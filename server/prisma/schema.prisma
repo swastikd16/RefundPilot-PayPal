@@ -1,0 +1,132 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model RefundCase {
+  id                  String               @id @default(cuid())
+  userId              String               @default("demo-customer-1")
+  complaintText       String
+  issueType           String               @default("UNCLEAR")
+  requestedOutcome    String               @default("REFUND")
+  state               String               @default("NEW")
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  purchaseReferences  PurchaseReference[]
+  paymentSnapshots    PaymentSnapshot[]
+  evidenceItems       EvidenceItem[]
+  events              CaseEvent[]
+  actions             ResolutionAction[]
+  merchantInteractions MerchantInteraction[]
+  aiAnalyses          AIAnalysis[]
+}
+
+model PurchaseReference {
+  id                String      @id @default(cuid())
+  caseId            String
+  refundCase        RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  provider          String      @default("PAYPAL")
+  orderId           String?
+  captureId         String?
+  merchantReference String?
+  merchantName      String?
+  amount            Float       @default(0.0)
+  currency          String      @default("USD")
+  sourceType        String      @default("DEMO_FIXTURE") // "LIVE_SANDBOX" | "DEMO_FIXTURE"
+  retrievedAt       DateTime    @default(now())
+}
+
+model PaymentSnapshot {
+  id               String      @id @default(cuid())
+  caseId           String
+  refundCase       RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  currency         String      @default("USD")
+  capturedAmount   Float       @default(0.0)
+  refundedAmount   Float       @default(0.0)
+  status           String      @default("UNKNOWN") // "COMPLETED" | "PARTIALLY_REFUNDED" | "REFUNDED" | "PENDING"
+  payloadHash      String?
+  rawResponseJson  String?
+  retrievedAt      DateTime    @default(now())
+}
+
+model EvidenceItem {
+  id             String      @id @default(cuid())
+  caseId         String
+  refundCase     RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  uploaderId     String      @default("demo-customer-1")
+  fileKey        String
+  originalName   String
+  mimeType       String
+  size           Int
+  evidenceType   String      @default("PRODUCT_PHOTO") // "PRODUCT_PHOTO" | "ORDER_CONFIRMATION" | "DELIVERY_DETAIL" | "MERCHANT_MESSAGE"
+  sharingStatus  String      @default("PRIVATE")       // "PRIVATE" | "APPROVED_FOR_MERCHANT" | "SUBMITTED"
+  createdAt      DateTime    @default(now())
+}
+
+model CaseEvent {
+  id           String      @id @default(cuid())
+  caseId       String
+  refundCase   RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  eventType    String      // "CASE_CREATED" | "EVIDENCE_UPLOADED" | "STATUS_CHECKED" | "REFUND_PROPOSED" etc.
+  actorType    String      // "CUSTOMER" | "AI_AGENT" | "SYSTEM" | "MERCHANT" | "PAYPAL_API"
+  source       String      // "PAYPAL_API" | "USER_INPUT" | "AI_INFERENCE" | "SYSTEM_ENGINE"
+  summary      String
+  metadataJson String?
+  occurredAt   DateTime    @default(now())
+}
+
+model ResolutionAction {
+  id                 String      @id @default(cuid())
+  caseId             String
+  refundCase         RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actionType         String      // "INITIATE_REFUND" | "CONTACT_MERCHANT" | "ESCALATE_DISPUTE"
+  status             String      @default("PROPOSED") // "PROPOSED" | "PENDING_CONFIRMATION" | "CONFIRMED" | "EXECUTED" | "REJECTED"
+  proposedBy         String      @default("AI_AGENT")
+  confirmationToken  String?
+  tokenExpiresAt     DateTime?
+  externalReference  String?     // PayPal refund ID e.g. "9AB..."
+  idempotencyKey     String?     @unique
+  confirmedAt        DateTime?
+  createdAt          DateTime    @default(now())
+}
+
+model MerchantInteraction {
+  id              String      @id @default(cuid())
+  caseId          String
+  refundCase      RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  channel         String      @default("SIMULATED") // "EMAIL" | "PORTAL" | "SIMULATED"
+  status          String      @default("DRAFT")     // "DRAFT" | "SENT" | "DELIVERED"
+  messageSubject  String?
+  messageBody     String
+  responseType    String?     // "ACCEPTED" | "DECLINED" | "MORE_INFO_REQUESTED" | null
+  responseContent String?
+  sourceType      String      @default("SIMULATED_DEMO")
+  createdAt       DateTime    @default(now())
+}
+
+model AIAnalysis {
+  id                       String      @id @default(cuid())
+  caseId                   String
+  refundCase               RefundCase  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  model                    String
+  issueClassification      String
+  customerGoal             String?
+  verifiedFactsJson        String      @default("[]")
+  customerClaimsJson       String      @default("[]")
+  missingFactsJson         String      @default("[]")
+  policyFindingsJson       String?     @default("[]")
+  observedPaymentState     String?
+  recommendedAction        String
+  rationale                String
+  confidenceBand           String      @default("MEDIUM") // "HIGH" | "MEDIUM" | "LOW"
+  userConfirmationRequired Boolean     @default(true)
+  safetyFlagsJson          String      @default("[]")
+  sourceReferencesJson     String?     @default("[]")
+  createdAt                DateTime    @default(now())
+}
+
