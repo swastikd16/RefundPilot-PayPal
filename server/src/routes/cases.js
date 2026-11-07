@@ -83,6 +83,7 @@ router.post('/', async (req, res) => {
 
     // If purchase/capture ID was provided or extracted, link it
     if (effectiveCaptureId) {
+      const isDemoId = effectiveCaptureId.startsWith('DEMO-') || effectiveCaptureId.startsWith('MOCK-');
       await prisma.purchaseReference.create({
         data: {
           caseId: newCase.id,
@@ -91,14 +92,14 @@ router.post('/', async (req, res) => {
           orderId: orderReference || null,
           amount: parseFloat(effectiveAmount) || 0,
           currency: effectiveCurrency,
-          sourceType: paypalService.hasCredentials() ? 'LIVE_SANDBOX' : 'DEMO_FIXTURE'
+          sourceType: (!isDemoId && paypalService.hasCredentials()) ? 'LIVE_SANDBOX' : 'DEMO_FIXTURE'
         }
       });
 
-      // Try looking up in PayPal Sandbox if credentials exist
-      let initialPaymentStatus = 'UNKNOWN';
+      // Try looking up in PayPal Sandbox if credentials exist and not a demo fixture
+      let initialPaymentStatus = isDemoId ? 'COMPLETED' : 'UNKNOWN';
       let rawJson = null;
-      if (paypalService.hasCredentials()) {
+      if (!isDemoId && paypalService.hasCredentials()) {
         try {
           const captureData = await paypalService.getCapture(effectiveCaptureId);
           initialPaymentStatus = captureData.status || 'COMPLETED';
@@ -602,8 +603,13 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
     let actualRefundStatus = 'COMPLETED';
 
     if (action.actionType === 'INITIATE_REFUND') {
-      // Execute via PayPal REST API if credentials exist
-      if (paypalService.hasCredentials() && purchaseRef && purchaseRef.captureId) {
+      const isDemoFixture = !purchaseRef?.captureId || 
+        purchaseRef.captureId.startsWith('DEMO-') || 
+        purchaseRef.captureId.startsWith('MOCK-') || 
+        purchaseRef.sourceType === 'DEMO_FIXTURE';
+
+      // Execute via PayPal REST API only for real sandbox captures
+      if (!isDemoFixture && paypalService.hasCredentials() && purchaseRef && purchaseRef.captureId) {
         try {
           const refundResult = await paypalService.refundCapture(purchaseRef.captureId, {
             note: 'RefundPilot AI Case Resolution',
@@ -624,7 +630,7 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
           return res.status(502).json({ error: `PayPal Sandbox error: ${paypalErr.message}` });
         }
       } else {
-        // Fallback demo fixture simulation (Visibly labeled per SRS FR-078)
+        // Fallback demo fixture simulation for benchmark / demonstration captures
         externalRefundId = 'DEMO-REF-' + Math.random().toString(36).substring(2, 9).toUpperCase();
         actualRefundStatus = 'COMPLETED';
       }
@@ -656,8 +662,8 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
         data: {
           caseId,
           eventType: 'REFUND_EXECUTED',
-          actorType: 'PAYPAL_API',
-          source: paypalService.hasCredentials() ? 'PAYPAL_API' : 'SYSTEM_ENGINE',
+          actorType: !isDemoFixture && paypalService.hasCredentials() ? 'PAYPAL_API' : 'SYSTEM_ENGINE',
+          source: !isDemoFixture && paypalService.hasCredentials() ? 'PAYPAL_API' : 'SYSTEM_ENGINE',
           summary: `Refund of ${purchaseRef?.amount || 0} ${purchaseRef?.currency || 'USD'} confirmed (ID: ${externalRefundId})`
         }
       });
@@ -714,7 +720,12 @@ router.post('/:id/refresh', async (req, res) => {
       return res.status(400).json({ error: 'No capture ID associated with this case.' });
     }
 
-    if (paypalService.hasCredentials()) {
+    const isDemoFixture = !purchaseRef?.captureId || 
+      purchaseRef.captureId.startsWith('DEMO-') || 
+      purchaseRef.captureId.startsWith('MOCK-') || 
+      purchaseRef.sourceType === 'DEMO_FIXTURE';
+
+    if (!isDemoFixture && paypalService.hasCredentials()) {
       const capture = await paypalService.getCapture(purchaseRef.captureId);
       const snapshot = await prisma.paymentSnapshot.create({
         data: {
@@ -739,7 +750,11 @@ router.post('/:id/refresh', async (req, res) => {
 
       return res.json(snapshot);
     } else {
-      return res.json({ message: 'Live PayPal credentials not active; snapshot is up to date.' });
+      const latestSnapshot = await prisma.paymentSnapshot.findFirst({
+        where: { caseId },
+        orderBy: { retrievedAt: 'desc' }
+      });
+      return res.json(latestSnapshot || { message: 'Demo fixture snapshot is up to date.' });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
