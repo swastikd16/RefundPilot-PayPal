@@ -9,7 +9,8 @@
     "verify:paypal": "npm --prefix server run verify:paypal",
     "test": "npm --prefix server run test:e2e",
     "test:state": "npm --prefix server run test:state",
-    "test:ai": "npm --prefix server run test:ai"
+    "test:ai": "npm --prefix server run test:ai",
+    "test:sponsors": "npm --prefix server run test:sponsors"
   }
 }
 

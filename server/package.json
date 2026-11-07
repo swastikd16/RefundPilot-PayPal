@@ -11,6 +11,7 @@
     "verify:paypal": "node src/scripts/verify-paypal.js",
     "test:state": "node src/scripts/test-state-machine.js",
     "test:ai": "node src/scripts/test-ai.js",
+    "test:sponsors": "node src/scripts/test-sponsors.js",
     "test:e2e": "node src/scripts/test-e2e-flow.js"
   },
   "dependencies": {

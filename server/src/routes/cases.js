@@ -7,6 +7,11 @@ import { CASE_STATES, canTransition, transitionCase, generateConfirmationToken }
 import { evaluatePolicy } from '../engine/policyRules.js';
 import { analyzeComplaint, draftMerchantMessage, inspectEvidenceImage, analyzeMerchantPolicy } from '../services/ai.js';
 import * as paypalService from '../services/paypal.js';
+import { lookupProductCatalog } from '../services/channel3.js';
+import { searchDisputePrecedents } from '../services/elasticSearch.js';
+import { fetchLiveMerchantPolicyWithKernel } from '../services/kernelBrowser.js';
+import { dispatchZapierEvent } from '../services/zapierWebhook.js';
+import { AstropodsResolutionContainer } from '../agents/astropodsRunner.js';
 
 const router = express.Router();
 
@@ -128,7 +133,7 @@ router.post('/', async (req, res) => {
     await prisma.aIAnalysis.create({
       data: {
         caseId: newCase.id,
-        model: aiExtracted.source || 'gemini-2.5-flash',
+        model: aiExtracted.source || 'gemini-3.5-flash-lite',
         issueClassification: initialIssue,
         customerGoal: aiExtracted.customerGoal,
         customerClaimsJson: JSON.stringify(aiExtracted.customerClaims || [complaintText]),
@@ -143,6 +148,40 @@ router.post('/', async (req, res) => {
         safetyFlagsJson: JSON.stringify(policyResult.safetyFlags)
       }
     });
+
+    // Corroborate product details with Channel3 unified catalog
+    try {
+      const catalogResult = await lookupProductCatalog(complaintText);
+      await prisma.caseEvent.create({
+        data: {
+          caseId: newCase.id,
+          eventType: 'STATUS_CHECKED',
+          actorType: 'AI_AGENT',
+          source: 'CHANNEL3_CATALOG',
+          summary: `Channel3 Catalog Match: ${catalogResult.canonicalTitle}${catalogResult.msrp ? ` (MSRP: $${catalogResult.msrp})` : ''}`,
+          metadataJson: JSON.stringify(catalogResult)
+        }
+      });
+    } catch (e) {
+      // ponytail: non-blocking catalog enrichment fallback
+    }
+
+    // Search historical dispute precedents with Elastic vector index
+    try {
+      const precedentResult = await searchDisputePrecedents(initialIssue, complaintText);
+      await prisma.caseEvent.create({
+        data: {
+          caseId: newCase.id,
+          eventType: 'STATUS_CHECKED',
+          actorType: 'AI_AGENT',
+          source: 'ELASTIC_VECTOR_INDEX',
+          summary: `Elastic Precedent Search: Ref ${precedentResult.topMatch?.id} (${precedentResult.historicalSettlementRate}% historical success rate)`,
+          metadataJson: JSON.stringify(precedentResult)
+        }
+      });
+    } catch (e) {
+      // ponytail: non-blocking precedent enrichment fallback
+    }
 
     // Move state to INVESTIGATING or NEEDS_INFO
     const nextState = policyResult.missingFacts.length > 0 ? CASE_STATES.NEEDS_INFO : CASE_STATES.INVESTIGATING;
@@ -623,6 +662,27 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
         }
       });
 
+      // ponytail: dispatch Zapier automated resolution notification webhook
+      try {
+        await dispatchZapierEvent('refund.executed', {
+          caseId,
+          refundId: externalRefundId,
+          amount: purchaseRef?.amount || 0,
+          currency: purchaseRef?.currency || 'USD'
+        });
+        await prisma.caseEvent.create({
+          data: {
+            caseId,
+            eventType: 'STATUS_CHECKED',
+            actorType: 'SYSTEM',
+            source: 'ZAPIER_AUTOMATION',
+            summary: `Dispatched Zapier webhook for refund notification (${externalRefundId})`
+          }
+        });
+      } catch (zapErr) {
+        // ponytail: non-blocking Zapier dispatch
+      }
+
       // Transition case to RESOLVED
       await transitionCase(caseId, CASE_STATES.RESOLVED, {
         actorType: 'SYSTEM',
@@ -688,13 +748,20 @@ router.post('/:id/refresh', async (req, res) => {
 
 /**
  * POST /api/cases/:id/policy-analyze
- * Enhancement 5: Analyze custom merchant policy excerpt against this case
+ * Enhancement 5: Analyze custom merchant policy excerpt or crawl live merchant site via KERNEL Cloud Browser
  */
 router.post('/:id/policy-analyze', async (req, res) => {
   try {
-    const { policyText } = req.body;
-    if (!policyText) {
-      return res.status(400).json({ error: 'Policy text is required.' });
+    const { policyText, merchantDomain } = req.body;
+    let effectivePolicyText = policyText;
+
+    if (!effectivePolicyText && merchantDomain) {
+      const kernelRes = await fetchLiveMerchantPolicyWithKernel(merchantDomain);
+      effectivePolicyText = kernelRes.extractedText;
+    }
+
+    if (!effectivePolicyText) {
+      return res.status(400).json({ error: 'Policy text or merchant domain is required.' });
     }
 
     const currentCase = await prisma.refundCase.findUnique({
@@ -706,7 +773,7 @@ router.post('/:id/policy-analyze', async (req, res) => {
       return res.status(404).json({ error: 'Case not found' });
     }
 
-    const result = await analyzeMerchantPolicy(policyText, {
+    const result = await analyzeMerchantPolicy(effectivePolicyText, {
       issueType: currentCase.issueType,
       purchaseDate: currentCase.purchaseReferences?.[0]?.retrievedAt
     });
@@ -716,7 +783,7 @@ router.post('/:id/policy-analyze', async (req, res) => {
         caseId: currentCase.id,
         eventType: 'STATUS_CHECKED',
         actorType: 'AI_AGENT',
-        source: 'AI_INFERENCE',
+        source: merchantDomain ? 'KERNEL_CLOUD_BROWSER' : 'AI_INFERENCE',
         summary: `Analyzed Merchant Return Policy: ${result.summary} (Return Window: ${result.returnWindowDays || 'N/A'} days)`,
         metadataJson: JSON.stringify(result)
       }
@@ -806,6 +873,32 @@ router.get('/:id/export-packet', async (req, res) => {
     });
 
     res.json({ packet, filename: `RefundPilot-Dispute-Packet-${caseData.id.substring(0, 8)}.md` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/cases/:id/astropods
+ * Returns the multi-stage autonomous Astropods execution plan and container state.
+ */
+router.get('/:id/astropods', async (req, res) => {
+  try {
+    const caseData = await prisma.refundCase.findUnique({
+      where: { id: req.params.id },
+      include: {
+        evidenceItems: true,
+        merchantInteractions: true,
+        resolutionActions: true
+      }
+    });
+
+    if (!caseData) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+
+    const container = new AstropodsResolutionContainer(caseData);
+    res.json(container.getExecutionPlan());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
