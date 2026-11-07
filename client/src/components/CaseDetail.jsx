@@ -10,6 +10,7 @@ import RefundModal from './RefundModal';
 import PolicyAnalyzerModal from './PolicyAnalyzerModal';
 import DisputeEscalatorGuide from './DisputeEscalatorGuide';
 import StepProgress from './StepProgress';
+import BryntumDisputeTimeline from './BryntumDisputeTimeline';
 import { proposeAction, updateCase, refreshPaymentStatus, exportDisputePacket } from '../api';
 
 export default function CaseDetail({ caseData, onBack, onRefresh }) {
@@ -183,6 +184,9 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
 
         {/* 4-Step Resolution Progress Stepper */}
         <StepProgress currentState={caseData.state} />
+
+        {/* Bryntum Resolution Timeline & SLA Scheduler */}
+        <BryntumDisputeTimeline caseData={caseData} />
       </div>
 
       {/* Tri-Color Grounding Container */}

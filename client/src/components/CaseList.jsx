@@ -1,7 +1,9 @@
-import React from 'react';
-import { ArrowRight, AlertCircle, Clock, CheckCircle2, ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, AlertCircle, Clock, CheckCircle2, ShieldAlert, LayoutGrid, Table } from 'lucide-react';
+import CaseLedgerGrid from './CaseLedgerGrid';
 
 export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
+  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'grid'
   if (!cases || cases.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'var(--card-bg)', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
@@ -24,9 +26,30 @@ export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
           <h2>Active Resolution Cases</h2>
           <p>Track complaints, verified PayPal transaction snapshots, and guided escalations.</p>
         </div>
+
+        {/* View Switcher: Cards vs AG Grid Ledger */}
+        <div style={{ display: 'flex', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '4px', borderRadius: '8px', border: '1px solid var(--card-border)' }}>
+          <button
+            className={`view-btn ${viewMode === 'cards' ? 'active' : ''}`}
+            onClick={() => setViewMode('cards')}
+            title="Card View"
+          >
+            <LayoutGrid size={15} /> Cards
+          </button>
+          <button
+            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="AG Grid Audit Ledger View"
+          >
+            <Table size={15} /> AG Grid Ledger
+          </button>
+        </div>
       </div>
 
-      <div className="cases-grid">
+      {viewMode === 'grid' ? (
+        <CaseLedgerGrid cases={cases} onSelectCase={onSelectCase} />
+      ) : (
+        <div className="cases-grid">
         {cases.map((c) => {
           const purchase = c.purchaseReferences?.[0];
           const payment = c.paymentSnapshots?.[0];
@@ -66,6 +89,7 @@ export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
