@@ -1,0 +1,40 @@
+services:
+  # Backend API Service
+  - type: web
+    name: refundpilot-api
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: cd server && npm install && npm run db:push
+    startCommand: cd server && npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: PAYPAL_BASE_URL
+        value: https://api-m.sandbox.paypal.com
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: APP_BASE_URL
+        fromService:
+          name: refundpilot-web
+          type: web
+          property: host
+
+  # Frontend Web UI
+  - type: web
+    name: refundpilot-web
+    env: static
+    plan: free
+    region: oregon
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: RefundPilot AI API
+  description: AI-assisted refund resolution and case-management system for PayPal transactions.
+  version: 1.0.0
+  contact:
+    name: RefundPilot AI Developer Team
+servers:
+  - url: http://localhost:5000/api
+    description: Local Development Server
+paths:
+  /health:
+    get:
+      summary: Service Health Check
+      description: Returns health status, PayPal sandbox configuration state, and database connectivity.
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: "ok" }
+                  paypalConfigured: { type: boolean, example: true }
+                  database: { type: string, example: "connected" }
+
+  /cases:
+    get:
+      summary: List Dispute Cases
+      description: Returns all active dispute cases with payment snapshots and AI triage summaries.
+      responses:
+        '200':
+          description: List of cases
+    post:
+      summary: Open New Refund Case
+      description: Submits a natural language complaint for Gemini 3.5 Flash Lite triage and links PayPal capture facts.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [complaintText]
+              properties:
+                complaintText: { type: string, example: "Sony headphones arrived with a cracked right earcup." }
+                captureId: { type: string, example: "DEMO-CAP-SONY1000" }
+                amount: { type: number, example: 399.00 }
+                currency: { type: string, example: "USD" }
+      responses:
+        '201':
+          description: Case created and initial triage event recorded.
+
+  /cases/{id}:
+    get:
+      summary: Get Full Case Details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Full case object with purchase reference, payment snapshot, evidence items, and audit timeline.
+    patch:
+      summary: Update Case Fields
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state: { type: string, example: "CLOSED_BY_USER" }
+                requestedOutcome: { type: string }
+      responses:
+        '200':
+          description: Case updated.
+
+  /cases/{id}/actions/propose:
+    post:
+      summary: Propose Consequential Action
+      description: Generates a single-use 10-minute expiring cryptographic confirmation token.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actionType: { type: string, example: "INITIATE_REFUND" }
+      responses:
+        '200':
+          description: Token generated.
+
+  /cases/{id}/actions/{actionId}/confirm:
+    post:
+      summary: Confirm and Execute Action
+      description: Validates confirmation token and triggers the PayPal Sandbox refund execution.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: actionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        '200':
+          description: Refund executed against PayPal Sandbox API.
+
+  /cases/{id}/export-packet:
+    get:
+      summary: Export Official Dispute Evidence Packet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Formatted Markdown dispute packet.

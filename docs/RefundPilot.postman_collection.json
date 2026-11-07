@@ -1,0 +1,78 @@
+{
+  "info": {
+    "name": "RefundPilot AI - PayPal Dispute API",
+    "_postman_id": "refundpilot-collection-v1",
+    "description": "Postman API collection for testing RefundPilot AI refund dispute orchestration and PayPal Sandbox flows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "2. List Active Cases",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cases",
+          "host": ["{{baseUrl}}"],
+          "path": ["cases"]
+        }
+      }
+    },
+    {
+      "name": "3. Open Refund Case (NL Intake)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"complaintText\": \"Sony WH-1000XM5 headphones arrived with a cracked right earcup. Order DEMO-ORD-987654.\",\n  \"captureId\": \"DEMO-CAP-SONY1000\",\n  \"amount\": 399.00,\n  \"currency\": \"USD\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cases",
+          "host": ["{{baseUrl}}"],
+          "path": ["cases"]
+        }
+      }
+    },
+    {
+      "name": "4. Propose Consequential Refund Action",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"actionType\": \"INITIATE_REFUND\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cases/{{caseId}}/actions/propose",
+          "host": ["{{baseUrl}}"],
+          "path": ["cases", "{{caseId}}", "actions", "propose"]
+        }
+      }
+    },
+    {
+      "name": "5. Export Formal Dispute Packet",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cases/{{caseId}}/export-packet",
+          "host": ["{{baseUrl}}"],
+          "path": ["cases", "{{caseId}}", "export-packet"]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://apimatic.io/schemas/context-plugin/v1.json",
+  "name": "RefundPilot-AI-Dispute-Context",
+  "version": "1.0.0",
+  "description": "APIMatic Context Plugin descriptor providing AI agents with structured PayPal dispute and refund resolution capabilities.",
+  "apiSpecification": "./openapi.yaml",
+  "authentication": {
+    "type": "none_for_local_sandbox"
+  },
+  "agentCapabilities": [
+    {
+      "name": "triage_complaint",
+      "endpoint": "/cases",
+      "method": "POST",
+      "description": "Submits user refund complaint to extract structured claims, defect categories, and link PayPal capture IDs."
+    },
+    {
+      "name": "get_verified_status",
+      "endpoint": "/cases/{id}",
+      "method": "GET",
+      "description": "Retrieves authoritative PayPal Sandbox payment snapshot and grounded resolution timeline."
+    },
+    {
+      "name": "execute_guarded_refund",
+      "endpoint": "/cases/{id}/actions/{actionId}/confirm",
+      "method": "POST",
+      "description": "Executes PayPal Sandbox refund following two-phase cryptographic token confirmation."
+    }
+  ]
+}
