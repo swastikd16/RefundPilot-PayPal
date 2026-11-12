@@ -583,6 +583,15 @@ router.post('/:id/actions/:actionId/confirm', async (req, res) => {
 
     // Idempotent guard: if already executed, return success cleanly
     if (action.status === 'EXECUTED') {
+      try {
+        await transitionCase(caseId, CASE_STATES.RESOLVED, {
+          actorType: 'SYSTEM',
+          source: 'PAYPAL_API',
+          summary: `Case marked RESOLVED after verified refund confirmation (${action.externalReference || 'EXECUTED'}).`
+        });
+      } catch (e) {
+        // ignore if already resolved
+      }
       return res.json({
         success: true,
         refundId: action.externalReference || 'EXECUTED',
