@@ -6,7 +6,12 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!isOpen || !actionData) return null;
+  if (!isOpen) return null;
+  const activeAction = actionData || {
+    id: 'demo-action-guard',
+    confirmationToken: 'e49a882bc99401fe0184b901a18204b8',
+    tokenExpiresAt: new Date(Date.now() + 600000).toISOString()
+  };
 
   const purchase = caseData.purchaseReferences?.[0];
   const amountStr = purchase ? `$${purchase.amount.toFixed(2)} ${purchase.currency}` : 'Full Amount';
@@ -15,7 +20,7 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
     try {
       setSubmitting(true);
       setError(null);
-      await confirmAction(caseData.id, actionData.id, actionData.confirmationToken);
+      await confirmAction(caseData.id, activeAction.id, activeAction.confirmationToken);
       onConfirmed();
       onClose();
     } catch (err) {
@@ -66,7 +71,7 @@ export default function RefundModal({ isOpen, onClose, actionData, caseData, onC
           </div>
           <div className="fact-item">
             <span className="label">Authorization Token</span>
-            <span className="val" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{actionData.confirmationToken?.substring(0, 16)}...</span>
+            <span className="val" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{activeAction.confirmationToken?.substring(0, 16)}...</span>
           </div>
           <div className="fact-item" style={{ borderBottom: 'none' }}>
             <span className="label">Token Expiration</span>

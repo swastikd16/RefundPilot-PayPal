@@ -3,7 +3,13 @@ import { ArrowRight, AlertCircle, Clock, CheckCircle2, ShieldAlert, LayoutGrid, 
 import CaseLedgerGrid from './CaseLedgerGrid';
 
 export default function CaseList({ cases, onSelectCase, onOpenNewCase }) {
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'grid'
+  const [viewMode, setViewMode] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('view') === 'grid' ? 'grid' : 'cards';
+    } catch (e) {
+      return 'cards';
+    }
+  }); // 'cards' | 'grid'
   const caseList = Array.isArray(cases) ? cases : [];
 
   if (caseList.length === 0) {

@@ -19,8 +19,17 @@ export default function CaseDetail({ caseData, onBack, onRefresh }) {
   const [proposing, setProposing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [activeAction, setActiveAction] = useState(null);
-  const [showPolicyModal, setShowPolicyModal] = useState(false);
-  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(() => {
+    try { return new URLSearchParams(window.location.search).get('modal') === 'policy'; } catch (e) { return false; }
+  });
+  const [showRefundModal, setShowRefundModal] = useState(() => {
+    try { return new URLSearchParams(window.location.search).get('modal') === 'refund'; } catch (e) { return false; }
+  });
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('scroll') === 'bottom') {
+      setTimeout(() => window.scrollTo(0, 800), 200);
+    }
+  }, []);
   const [exporting, setExporting] = useState(false);
 
   const handleExportPacket = async () => {

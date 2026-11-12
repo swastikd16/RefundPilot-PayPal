@@ -71,6 +71,20 @@ RefundPilot AI integrates with all 10 ecosystem partners to deliver an enterpris
 
 ---
 
+## 📸 Screenshots Gallery
+
+High-resolution application screenshots (3:2 ratio) located in the [`screenshots/`](screenshots/) directory:
+
+1. **Dashboard & AI Intake**: `screenshots/01-dashboard-hero.png` — Natural language & voice complaint intake with triaged dispute cases.
+2. **AG Grid Dispute Ledger**: `screenshots/02-ag-grid-dispute-ledger.png` — Enterprise case ledger with sorting, filtering, and CSV export.
+3. **Dispute Timeline & Astropods Container**: `screenshots/03-case-detail-bryntum-astropods.png` — Bryntum 72h/180d SLA scheduler & Astropods 4-stage multi-agent container.
+4. **Evidence Vault & Merchant Hub**: `screenshots/04-evidence-vault-and-merchant-hub.png` — Visual evidence uploader and automated merchant liaison chat.
+5. **KERNEL Policy Analyzer**: `screenshots/05-policy-analyzer-modal.png` — Cloud browser merchant return policy crawler and clause analyzer.
+6. **PayPal Settlement Guardrail Modal**: `screenshots/06-paypal-refund-guardrail-modal.png` — Two-phase human confirmation with single-use expiring token.
+7. **Settled Resolution View**: `screenshots/07-case-settled-resolution.png` — Verified PayPal Sandbox refund settlement receipt.
+
+---
+
 ## ⚡ Quickstart
 
 ### 1. Configure Environment Variables
