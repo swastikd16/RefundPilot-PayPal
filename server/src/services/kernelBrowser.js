@@ -50,3 +50,4 @@ export async function fetchLiveMerchantPolicyWithKernel(merchantDomainOrUrl) {
     capturedAt: new Date().toISOString()
   };
 }
+

@@ -64,3 +64,4 @@ export async function lookupProductCatalog(query) {
     verifiedAt: new Date().toISOString()
   };
 }
+

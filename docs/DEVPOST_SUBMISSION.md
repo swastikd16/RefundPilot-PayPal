@@ -133,3 +133,4 @@ We integrated all 10 hackathon sponsors into meaningful, high-impact touchpoints
   npm run test:state    # Deterministic state machine checks
   npm run test:ai       # Structured Gemini JSON & injection defenses
   ```
+

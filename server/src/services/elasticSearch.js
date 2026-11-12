@@ -48,3 +48,4 @@ export async function searchDisputePrecedents(issueType, complaintText) {
     recommendedNextStep: 'Submit photographic proof and reference merchant 14-day defect policy.'
   };
 }
+

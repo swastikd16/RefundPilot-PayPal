@@ -45,3 +45,4 @@ runSponsorChecks().catch((err) => {
   console.error('Sponsor verification failed:', err);
   process.exit(1);
 });
+
