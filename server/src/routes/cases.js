@@ -914,7 +914,7 @@ router.get('/:id/astropods', async (req, res) => {
       include: {
         evidenceItems: true,
         merchantInteractions: true,
-        resolutionActions: true
+        actions: true
       }
     });
 
